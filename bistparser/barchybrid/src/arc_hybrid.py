@@ -46,18 +46,41 @@ class ArcHybridLSTM:
             #self.external_embedding = {line.split(' ')[0] : [float(f) for f in line.strip().split(' ')[1:]] for line in external_embedding_fp}
             #external_embedding_fp.close()
 	    W2V = w2vread.ReadW2V(options.external_embedding, 
-				  binary=not options.external_embedding_Textual, filterfile=options.external_embedding_filter)
+				  binary=not options.external_embedding_Textual, 
+				  filterfile=options.external_embedding_filter)
+
+	    if options.external_embedding_filter_new:
+		W2Vnew = w2vread.ReadW2V(options.external_embedding, 
+				      binary=not options.external_embedding_Textual, 
+				      filterfile=options.external_embedding_filter_new)
+
+
+				
 	    self.external_embedding = W2V.embeddings
 
+	    # number of dimension of the embeddings
             self.edim = len(self.external_embedding.values()[0])
 	   
             self.noextrn = [0.0 for _ in xrange(self.edim)]
+
+	    # we create a dico word:index
             self.extrnd = {word: i + 3 for i, word in enumerate(self.external_embedding)}
+
+	    if options.external_embedding_filter_new:
+		# adding words embeddigns for words not yet seen during training	
+		for word in W2Vnew.embeddings.keys():
+			if not self.external_embedding.has_key(word):
+				self.extrnd[word] = len(self.extrnd) + 3
+				self.external_embedding[word] = W2Vnew.embeddings[word]
+
+	   
+	    # ininitialise the size of the embeddings
             self.model.add_lookup_parameters("extrn-lookup", (len(self.external_embedding) + 3, self.edim))
+	  
 
             for word, i in self.extrnd.iteritems():
 		#print "\nAVANT", word, i, lookup(self.model["extrn-lookup"], i).value()[:4]
-	        #print "w2v  ", word, i, self.external_embedding[word][:4]
+	        #print "w2v  ", i, word, self.external_embedding[word][:4]
                 self.model["extrn-lookup"].init_row(i, self.external_embedding[word])
 		#print "APRES", word, i, lookup(self.model["extrn-lookup"], i).value()[:4]
             self.extrnd['*PAD*'] = 1

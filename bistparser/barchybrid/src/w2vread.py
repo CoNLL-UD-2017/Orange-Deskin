@@ -35,7 +35,7 @@ class ReadW2V:
 	self.words = int(elems[0])
 	self.dims = int(elems[1])
 	self.embeddings = {}
-
+	
 	print "%d dimensions" % self.dims
 
 	self.filter = re.compile("[0-9,\.;:\(\)&\?!%#$@]")
@@ -103,7 +103,7 @@ class ReadW2V:
 	    fp.read(1)
 	    #print "VECTOR: ", list(f)
 	    #print "  norm: ", self.normalise(f)
-	    if self.keep and word in self.keep:
+	    if (self.keep and word in self.keep) or not self.keep:
 	    	self.embeddings[word] = self.normalise(f)
 	    if ct == self.words:
 		break

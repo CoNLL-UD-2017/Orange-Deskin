@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser.add_option("--extrn", dest="external_embedding", help="External embeddings", metavar="FILE")
     parser.add_option("--extrnT",  action="store_true", dest="external_embedding_Textual", help="External embeddings are textual", default=False)
     parser.add_option("--extrnFilter", dest="external_embedding_filter", help="External embeddings to filter", metavar="FILE")
+    parser.add_option("--extrnFilterNew", dest="external_embedding_filter_new", help="External embeddings not seen during training to filter", metavar="FILE")
     parser.add_option("--useroot",  action="store_true", dest="use_root", help="Add pseudo word *root* to sentence", default=False)
     parser.add_option("--model", dest="model", help="Load/Save model file", metavar="FILE", default="barchybrid.model")
     parser.add_option("--wembedding", type="int", dest="wembedding_dims", default=100)
@@ -108,12 +109,20 @@ if __name__ == '__main__':
             devpath = os.path.join(options.output, 'dev_epoch_%03d.conll' % (epoch+1))
             utils.write_conll(devpath, parser.Predict(options.conll_dev))
 	    # run evaluation
-	    command = 'perl src/utils/eval.pl -g ' + options.conll_dev + ' -s ' + devpath  + ' > ' + devpath + '.txt '
-	    print "executing: %s" % command
-            os.system(command)
+	    #command = 'perl src/utils/eval.pl -g ' + options.conll_dev + ' -s ' + devpath  + ' > ' + devpath + '.txt '
+	    #print "executing: %s" % command
+            #os.system(command)
 	    # just show current LAS
-  	    ifp = open(devpath + '.txt')
-	    print "current LAS", ifp.readline()
+  	    #ifp = open(devpath + '.txt')
+	    #print "current LAS", ifp.readline()
+            #ifp.close()
+
+	    command = "~/bin/toolbin/conll/evaluation_script/conll17_ud_eval.py --weights ~/bin/toolbin/conll/evaluation_script/weights.clas " + options.conll_dev + "  " + devpath  + " > " + devpath + '.txt4'
+	    os.system(command)
+	    # just show current LAS
+  	    ifp = open(devpath + '.txt4')
+	    for line in ifp.readlines():
+		print line.strip()
             ifp.close()
 
             print 'Finished predicting dev'
@@ -132,6 +141,7 @@ if __name__ == '__main__':
 	# overwrite options read from params.pickle
         stored_opt.external_embedding = options.external_embedding
 	stored_opt.external_embedding_filter = options.external_embedding_filter
+	stored_opt.external_embedding_filter_new = options.external_embedding_filter_new
 	if WITHCPOS:
             parser = ArcHybridLSTM(words, pos, cpos, GENDER, NUMBER, PERSON, rels, w2i, stored_opt)
 	else:
