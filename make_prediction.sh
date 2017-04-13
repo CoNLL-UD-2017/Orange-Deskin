@@ -1,24 +1,38 @@
-#!/bin/bash
+ #!/bin/bash
+
+if [ $# -lt 2 ]; then
+	echo "usage $0 test.conllu language-code"
+	exit 1
+fi
+
 
 TEST=$1
 LANG=$2
 
+
+HOSTNAME=$(hostname)
 # TODO: change as needed
-export LD_LIBRARY_PATH="/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn"
-echo ">>>" $LD_LIBRARY_PATH
+
+if [ "$HOSTNAME" == "tira-ubuntu" ]; then
+	export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
+	BASEPATH=/home/Orange-Deskin/conll2017/Orange-Deskin
+	DATAPATH=$BASEPATH/data
+else
+	export LD_LIBRARY_PATH="/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn"
+	BASEPATH=/mnt/RAID0SHDD2X1TB/Orange-Deskin
+	DATAPATH=/home/langnat/conll2017/data
+fi
+
+
+
 # the temp directory for the run
 TMPDIR=$(mktemp -d)
 
-BASEPATH=/mnt/RAID0SHDD2X1TB/Orange-Deskin
-
 OUTPATH=$BASEPATH/output
-
 PYSCRIPTROOT=$BASEPATH/py
-
 BISTROOT=$BASEPATH/bistparser/barchybrid
+MODELPATH=$DATAPATH/$LANG
 
-# TODO: change as needed
-DATAPATH=/home/langnat/conll2017/data
 
 # cleaning CoNLL text of comments and compound representations
 function cleanconllu() {
@@ -81,7 +95,7 @@ function predict() {
                 $VECTORS \
                 --test $INFILE
 
-        popd $BISTROOT > /dev/null
+        popd > /dev/null
 
         # check whether we need to deprojectivise
         COUNTPSEUDOPROJ=$(cut -f8 $TMPDIR/result1.conllu | grep "=" | wc -l)
@@ -93,7 +107,7 @@ function predict() {
 
         # reinsert lines with [n-m] or [n.1]
         #reinsiert $TMPDIR/result-deproj.conllu $OUTFILE
-        pyhton $PYSCRIPTROOT/reinsert.py $TEST $TMPDIR/result-deproj.conllu > $TMPDIR/result-deproj-reinsert.conllu
+        python $PYSCRIPTROOT/reinsert.py $TEST $TMPDIR/result-deproj.conllu > $TMPDIR/result-deproj-reinsert.conllu
 
 }
 
@@ -116,19 +130,25 @@ lemmalist $CLEANTEST > $LEMLIST
 echo "Generating Word List ..."
 WORDLIST=$TMPDIR/$LANG.words.txt
 #ALLWORDS=$DATAPATH/$LANG/allwords.txt
-ALLWORDS=$DATAPATH/allwords.txt
+ALLWORDS=$DATAPATH/$LANG/allwords.txt
 wordlist $ALLWORDS $FORMLIST $LEMLIST > $WORDLIST
 
-EXVECTORS=
-if [ "$3" != "" ]; then
-	EXVECTORS=$3
-fi
+# TODO make it work without and with 300 dims
+EXVECTORS=$MODELPATH/*500-dim.10-win.cbow.bin
+#if [ "$3" != "" ]; then
+#	EXVECTORS=$3
+#fi
+
 
 # predict
 echo "Predicting ..."
 predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $WORDLIST $EXVECTORS
 
+# copy result in output folder
 cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANG.output.conllu
+
+# evaulation for testing
+$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $OUTPATH/$LANG.output.conllu 
 
 # clean up
 rm -rf $TMPDIR
