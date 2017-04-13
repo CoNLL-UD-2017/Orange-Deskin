@@ -1,13 +1,14 @@
  #!/bin/bash
 
-if [ $# -lt 2 ]; then
-	echo "usage $0 test.conllu language-code"
+if [ $# -lt 3 ]; then
+	echo "usage $0 test.conllu language-code outfile"
 	exit 1
 fi
 
 
 TEST=$1
 LANG=$2
+OUTFILE=$3
 
 
 HOSTNAME=$(hostname)
@@ -28,7 +29,7 @@ fi
 # the temp directory for the run
 TMPDIR=$(mktemp -d)
 
-OUTPATH=$BASEPATH/output
+#OUTPATH=$BASEPATH/output
 PYSCRIPTROOT=$BASEPATH/py
 BISTROOT=$BASEPATH/bistparser/barchybrid
 MODELPATH=$DATAPATH/$LANG
@@ -145,10 +146,11 @@ echo "Predicting ..."
 predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $WORDLIST $EXVECTORS
 
 # copy result in output folder
-cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANG.output.conllu
+#cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANG.output.conllu
+cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 
 # evaulation for testing
-$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $OUTPATH/$LANG.output.conllu 
+$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
 rm -rf $TMPDIR
