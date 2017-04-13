@@ -118,6 +118,7 @@ if __name__ == '__main__':
             #ifp.close()
 
 	    command = "~/bin/toolbin/conll/evaluation_script/conll17_ud_eval.py --weights ~/bin/toolbin/conll/evaluation_script/weights.clas " + options.conll_dev + "  " + devpath  + " > " + devpath + '.txt4'
+	    print "executing: %s" % command
 	    os.system(command)
 	    # just show current LAS
   	    ifp = open(devpath + '.txt4')
