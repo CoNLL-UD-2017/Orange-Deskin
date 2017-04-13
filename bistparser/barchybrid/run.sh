@@ -1,4 +1,5 @@
-export LD_LIBRARY_PATH=/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn
+#export LD_LIBRARY_PATH=/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn
+export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
 
 TESTFILE=../../data/dev.conllu
 
