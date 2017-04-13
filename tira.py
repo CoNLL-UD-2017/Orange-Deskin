@@ -10,7 +10,7 @@ import os
 
 class RunTest:
     def __init__(self, inputdataset, outputdir):
-        mydir = os.path.dirname(os.path.realpath(os.path.dirname(sys.argv[0])))    
+        mydir = os.path.dirname(os.path.realpath(sys.argv[0]))    
     
         ifp = open("%s/metadata.json" % inputdataset)
         objects = json.load(ifp)
