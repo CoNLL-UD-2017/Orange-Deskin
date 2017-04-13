@@ -57,4 +57,8 @@ class Reinsert:
 if __name__ == "__main__":
     import sys
 
-    re = Reinsert(sys.argv[1], sys.argv[2])
+    if len(sys.argv) < 3:
+        print >> sys.stderr, "programm to reinsert lines ignored by the parser (comment lines and lines starting like 2-3 or 5.1"
+        print >> sys.stderr, "usage: %s original-conll-file parser-output-conll-file" % sys.argv[0]
+    else:
+        re = Reinsert(sys.argv[1], sys.argv[2])
