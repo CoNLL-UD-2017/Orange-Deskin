@@ -357,10 +357,11 @@ class Word:
         
 class Phrase:
     # la phrase entiere
-    def __init__(self, words):
+    def __init__(self, words, number=-1):
         self.words = words
         self.txt = u""
         self.head = None
+        self.number = number
 
 
 
@@ -550,7 +551,7 @@ class Phrase:
                     w.headObject = lastchild
                     w.head = lastchild.ident
                     head.dependants.remove(w)
-                    w.function = string.join(newfunction, "=")
+                    w.function = newfunction[-1] #string.join(newfunction, "=")
 
     def finddep(self, w, deprel):
         for child in w.dependants:
@@ -624,13 +625,18 @@ class Phrase:
         #for w in self.unprojectiveWords:
         for w in self.words:
             if use_set and not w in self.unprojectiveWords: continue
-            if len(w.dependants) != 0:
-                print >> sys.stderr, "Comma with depdendents!"
-                continue
+
+            if w.form == "," or (w.cat == "PUNCT" and w.form not in "()"):
+                if len(w.dependants) != 0:
+                    ids = []
+                    for d in w.dependants: ids.append(d.ident)
+                    print >> sys.stderr, "Comma %d with depdendents %s in sentence %d" % (w.ident, ids, self.number)
+                    continue
             
             w.dependants = []
 
             if w.form == "," or (w.cat == "PUNCT" and w.form not in "()"):
+
                 dist = abs(w.ident - w.head)
                 #print >> sys.stderr, "zzzz", w.ident, dist
                 if dist > 1:
@@ -799,7 +805,7 @@ class ConllDocSentencewise:
 
         #print u"aaaaaa %d %s" %( self.countphrase, words[0])
         #words[1].ident, words[1].cat
-        return Phrase(words)
+        return Phrase(words, self.countphrase)
 
 
     def nextNoParse(self):
