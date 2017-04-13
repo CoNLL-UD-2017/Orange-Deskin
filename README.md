@@ -2,7 +2,8 @@
 CoNLL 2017 Shared Task Team Orange-Deskin (Orange/OLPS/CONTENT/DESKIN)
 
 We use a modified version of BistParser
-(https://github.com/elikip/bist-parser, old version which uses CNN library ), which
+(https://github.com/elikip/bist-parser, old version which uses CNN
+library (https://github.com/clab/cnn-v1)), which
   * only outputs dependency trees with a unique root
   * uses pseudo projectivisation
   * can deal with conllu (comments, 2-3 and 5.1 lines)
