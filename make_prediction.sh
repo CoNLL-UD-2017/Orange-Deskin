@@ -149,7 +149,7 @@ predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $WORDLIST $EX
 cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 
 # evaulation for testing
-$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
+#$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
 rm -rf $TMPDIR

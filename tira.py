@@ -20,22 +20,22 @@ class RunTest:
         for object in objects:
             lcode = object[u"lcode"]
             ltcode = object[u"ltcode"]
-            psegmorefile = object[u"psegmorfile"]
+            psegmorfile = object[u"psegmorfile"]
             outfile = object[u"outfile"]            
             goldile = object[u"goldfile"]
             
             if ltcode == u"fr":
-                print "Running", ltcode, psegmorefile, outfile
+                #print "Running", ltcode, psegmorfile, outfile
                 command = "%s/make_prediction.sh %s/%s %s %s/%s" % \
                     (mydir,
-                     inputdataset, psegmorefile, 
+                     inputdataset, psegmorfile, 
                      ltcode, 
                      outputdir, outfile)
                 #print command
                 os.system(command)
             else:
                 command = "cp %s/%s %s/%s" % \
-                     (inputdataset, psegmorefile,
+                     (inputdataset, psegmorfile,
                       outputdir, outfile)
                 #print command
                 os.system(command)
