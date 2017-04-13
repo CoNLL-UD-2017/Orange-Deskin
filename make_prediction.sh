@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 if [ $# -lt 3 ]; then
 	echo "usage $0 test.conllu language-code outfile"
@@ -12,7 +12,6 @@ OUTFILE=$3
 
 
 HOSTNAME=$(hostname)
-# TODO: change as needed
 
 if [ "$HOSTNAME" == "tira-ubuntu" ]; then
 	export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
