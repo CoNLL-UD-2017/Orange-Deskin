@@ -134,11 +134,13 @@ ALLWORDS=$DATAPATH/$LANG/allwords.txt
 wordlist $ALLWORDS $FORMLIST $LEMLIST > $WORDLIST
 
 # TODO make it work without and with 300 dims
-EXVECTORS=$MODELPATH/*500-dim.10-win.cbow.bin
-#if [ "$3" != "" ]; then
-#	EXVECTORS=$3
-#fi
+#EXVECTORS=$MODELPATH/*500-dim.10-win.cbow.bin
 
+# find correct vectors file
+VECTORFILE=$($PYSCRIPTROOT/readparamspickle.py $MODELPATH/params.pickle  external_embedding | gawk -F / '{print $NF}')
+if [ $VECTORFILE != "None" ]; then
+	EXVECTORS=$MODELPATH/$VECTORFILE
+fi
 
 # predict
 echo "Predicting ..."
