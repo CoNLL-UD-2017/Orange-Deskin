@@ -372,7 +372,7 @@ class ArcHybridLSTM:
 		if self.use_root:
                 	yield [sentence[-1]] + sentence[:-1]
 		else:
-			# srite_conll coupe le premier mot, il faut mettre qq chose ici
+			# write_conll coupe le premier mot, il faut mettre qq chose ici
 			yield [sentence[-1]] + sentence
 
 

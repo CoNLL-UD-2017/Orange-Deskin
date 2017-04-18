@@ -39,6 +39,9 @@ class Parser:
 
 
             self.stored_opt.external_embedding = options.external_embedding
+            self.stored_opt.external_embedding_filter = options.external_embedding_filter
+            self.stored_opt.external_embedding_filter_new = options.external_embedding_filter_new
+
 
             if self.WITHCPOS:
                 self.arc_hybrid = ArcHybridLSTM(self.words, self.pos, self.cpos, self.GENDER, self.NUMBER, self.PERSON, self.rels, self.w2i, self.stored_opt)
@@ -130,6 +133,8 @@ if __name__ == "__main__":
     parser.add_option("--test", dest="conll_test", help="Annotated CONLL test file", metavar="FILE", default="../data/PTB_SD_3_3_0/test.conll")
     parser.add_option("--params", dest="params", help="Parameters file", metavar="FILE", default="params.pickle")
     parser.add_option("--extrn", dest="external_embedding", help="External embeddings", metavar="FILE")
+    parser.add_option("--extrnFilter", dest="external_embedding_filter", help="External embeddings to filter", metavar="FILE")
+    parser.add_option("--extrnFilterNew", dest="external_embedding_filter_new", help="External embeddings not seen during training to filter", metavar="FILE")
     parser.add_option("--model", dest="model", help="Load/Save model file", metavar="FILE", default="barchybrid.model")
     parser.add_option("--wembedding", type="int", dest="wembedding_dims", default=100)
     parser.add_option("--pembedding", type="int", dest="pembedding_dims", default=25)

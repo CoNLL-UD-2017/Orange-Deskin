@@ -22,13 +22,13 @@ class RunTest:
             ltcode = object[u"ltcode"]
             psegmorfile = object[u"psegmorfile"]
             outfile = object[u"outfile"]            
-            goldile = object[u"goldfile"]
+            goldfile = object[u"goldfile"]
             
             if ltcode == u"fr":
                 #print "Running", ltcode, psegmorfile, outfile
                 command = "%s/make_prediction.sh %s/%s %s %s/%s" % \
                     (mydir,
-                     inputdataset, psegmorfile, 
+                     inputdataset, psegmorfile, #goldfile, #psegmorfile, 
                      ltcode, 
                      outputdir, outfile)
                 #print command

@@ -88,7 +88,8 @@ function predict() {
         # this path is needs to be adapted for individual system
 	pushd $BISTROOT > /dev/null
 
-        python src/parser.py --cnn-mem 4000 --predict \
+        #python src/parser.py --cnn-mem 4000 --predict 
+        python src/parse_1by1.py --cnn-mem 4000 --predict \
                 --outfile $TMPDIR/result1.conllu \
                 --model $MODEL \
                 --params $PARAMS \
@@ -138,7 +139,7 @@ wordlist $ALLWORDS $FORMLIST $LEMLIST > $WORDLIST
 
 # find correct vectors file
 VECTORFILE=$($PYSCRIPTROOT/readparamspickle.py $MODELPATH/params.pickle  external_embedding | gawk -F / '{print $NF}')
-if [ $VECTORFILE != "None" ]; then
+if [ "$VECTORFILE" != "None" ]; then
 	EXVECTORS=$MODELPATH/$VECTORFILE
 fi
 
@@ -154,5 +155,5 @@ cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 #$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
-rm -rf $TMPDIR
+#rm -rf $TMPDIR
 
