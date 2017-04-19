@@ -13,9 +13,14 @@ OUTFILE=$3
 
 HOSTNAME=$(hostname)
 
+
 if [ "$HOSTNAME" == "tira-ubuntu" ]; then
 	export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
 	BASEPATH=/home/Orange-Deskin/conll2017/Orange-Deskin
+	DATAPATH=$BASEPATH/data
+elif [ "$HOSTNAME" == "yd-jeuh6401" ]; then
+	export LD_LIBRARY_PATH=/home/jeuh6401/SemanticData/bist-parser/cnn-v1-gpu/pycnn
+	BASEPATH=/home/jeuh6401/conll2017/Orange-Deskin
 	DATAPATH=$BASEPATH/data
 else
 	export LD_LIBRARY_PATH="/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn"
@@ -51,10 +56,9 @@ function lemmalist() {
         cut -f3 $INFILE | sort -u
 }
 
-# generate word list
+# generate word list (lowercase)
 function wordlist() {
-        echo $@
-        cat $@ | sort -u
+        cat $@ | perl -CSD -ne 'print lc'
 }
 
 # deprojectivises output from prediction with BistParser
@@ -75,13 +79,16 @@ function predict() {
         # BistParser parameters to use
         PARAMS=$3
 	
-	# word list file
+	# word list file words known during training
 	WORDS=$4
+
+	# words read in document to parse
+	NEWWORDS=$5
 
         # word embeddings to use
 	VECTORS=
-	if [ "$5" != "" ]; then
-        	VECTORS="--extrn $5 --extrnFilter $WORDS"
+	if [ "$6" != "" ]; then
+        	VECTORS="--extrn $6 --extrnFilter $WORDS --extrnFilterNew $NEWWORDS"
 	fi
        
         # prediction
@@ -130,9 +137,8 @@ lemmalist $CLEANTEST > $LEMLIST
 # create word list
 echo "Generating Word List ..."
 WORDLIST=$TMPDIR/$LANG.words.txt
-#ALLWORDS=$DATAPATH/$LANG/allwords.txt
 ALLWORDS=$DATAPATH/$LANG/allwords.txt
-wordlist $ALLWORDS $FORMLIST $LEMLIST > $WORDLIST
+wordlist $FORMLIST $LEMLIST > $WORDLIST
 
 # TODO make it work without and with 300 dims
 #EXVECTORS=$MODELPATH/*500-dim.10-win.cbow.bin
@@ -145,7 +151,7 @@ fi
 
 # predict
 echo "Predicting ..."
-predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $WORDLIST $EXVECTORS
+predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
 
 # copy result in output folder
 #cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANG.output.conllu

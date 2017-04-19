@@ -78,8 +78,8 @@ class Parser:
         #os.system('perl src/utils/eval.pl -g ' + options.conll_test + ' -s ' + tespath  + ' > ' + tespath + '.txt &')
 	#print 'Finished predicting test' #,te-ts
 	if len(out) < 10:
-		print conllstring
-		print out
+		print "INPUT", conllstring
+		print "OUTPUT", out
 	return out
  
 class FeedConll:

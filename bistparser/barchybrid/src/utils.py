@@ -30,6 +30,9 @@ class ConllEntry:
         self.parent_id = parent_id
         self.relation = relation
 
+    def __repr__(self):
+	return "%s:%s:%s:%s:%s" % (self.id, self.form, self.cpos, self.pred_parent_id, self.pred_relation)
+
 import string
 
 class ParseForest:
