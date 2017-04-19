@@ -161,5 +161,5 @@ cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 #$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
-#rm -rf $TMPDIR
+rm -rf $TMPDIR
 
