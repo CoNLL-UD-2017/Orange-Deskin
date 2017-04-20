@@ -64,7 +64,7 @@ class ReadW2V:
 			vector.append(float(floattext))
 	            self.embeddings[word] = self.normalise(vector)
 	    if ct % 10000 == 0:
-		sys.stderr.write("%d vectors read (%d ignored)...\r" % (ct,filtered))
+		sys.stderr.write("%d vectors read (%d ignored)...\n" % (ct,filtered))
 	    line = fp.readline()
 	sys.stderr.write("All %d vectors read (%d ignored)\n" % (ct,filtered))
 
@@ -95,7 +95,7 @@ class ReadW2V:
 	    mot = []
 	    ct += 1
 	    if ct % 50000 == 0:
-		sys.stdout.write("%d word vectors read (%d kept)\r" % (ct, len(self.embeddings)))
+		sys.stdout.write("%d word vectors read (%d kept)\n" % (ct, len(self.embeddings)))
 		sys.stdout.flush()
 	    # read self.dims floats: the vector
 	    f = struct.unpack('f'*self.dims, fp.read(self.dims*4))

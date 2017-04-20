@@ -409,14 +409,15 @@ class ArcHybridLSTM:
 		    timeSpent = time.time()-start
 		    totalTimeSpent = time.time()-start1
 		    timeToGo = totalTimeSpent*(numOfSent-iSentence) / iSentence
-		    print 'Epoch: %2d Processing sentence number: %6d/%d Loss: %.5f Errors: %.5f Labeled Errors: %.5f Time: %.1f s, ETA: %.1f s' \
+		    print 'Epoch: %2d sentence number: %6d/%d Loss: %.5f Errors: %.5f Labeled Errors: %.5f Time: %.1f s, total: %.1f s ETA: %.1f s' \
 			% (epoch,
 			   iSentence,
                            numOfSent,
 			   (eloss / etotal),
 			   (float(eerrors) / etotal),
 			   (float(lerrors) / etotal),
-			   timeSpent, timeToGo
+			   timeSpent, totalTimeSpent,
+			   timeToGo
 			  )
                     start = time.time()
                     eerrors = 0
