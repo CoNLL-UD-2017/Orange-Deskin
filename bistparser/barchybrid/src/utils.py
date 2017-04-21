@@ -1,6 +1,6 @@
 from collections import Counter
 import re
-
+import os
 
 class ConllEntry:
     def __init__(self, id, form, pos, cpos, features, parent_id=None, relation=None):
@@ -158,6 +158,29 @@ def write_conll(fn, conll_gen):
                 fh.write('\n')
             fh.write('\n')
     fh.close()
+
+
+evalscript="~/bin/toolbin/conll/evaluation_script/conll17_ud_eval.py"
+weightfile="~/bin/toolbin/conll/evaluation_script/weights.clas"
+
+# runs eval script and returns weighted LAS
+def runeval(infile, outfile, verbose=True):
+    print "predicting %s" % infile
+    command = "%s --weights %s %s %s > %s.txt4" % (evalscript, weightfile, infile, outfile, outfile)
+    #+ options.conll_dev + "  " + devpath  + " > " + devpath + '.txt4'
+    print "executing: %s" % command
+    os.system(command)
+    # just show current LAS
+    ifp = open(outfile + '.txt4')
+    weightedLAS = 0
+    for line in ifp.readlines():
+	line = line.strip()
+	if line.startswith("Weigh"):
+		elems = line.split("|")
+		weightedLAS = float(elems[3])
+	if verbose: print line
+    ifp.close()
+    return weightedLAS
 
 
 numberRegex = re.compile("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+");
