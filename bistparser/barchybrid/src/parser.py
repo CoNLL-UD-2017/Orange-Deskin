@@ -102,8 +102,9 @@ if __name__ == '__main__':
 	else:
 	    parser = ArcHybridLSTM(words, pos, rels, w2i, options)
 
+	deltas = []
         for epoch in xrange(options.epochs):
-            print 'Starting epoch', epoch
+            print '\n================\nStarting epoch', epoch
             parser.Train(options.conll_train, epoch)
             #devpath = os.path.join(options.output, 'dev_epoch_' + str(epoch+1) + '.conll')
             devpath = os.path.join(options.output, 'dev_epoch_%03d.conll' % (epoch+1))
@@ -117,16 +118,33 @@ if __name__ == '__main__':
 	    #print "current LAS", ifp.readline()
             #ifp.close()
 
-	    command = "~/bin/toolbin/conll/evaluation_script/conll17_ud_eval.py --weights ~/bin/toolbin/conll/evaluation_script/weights.clas " + options.conll_dev + "  " + devpath  + " > " + devpath + '.txt4'
-	    print "executing: %s" % command
-	    os.system(command)
-	    # just show current LAS
-  	    ifp = open(devpath + '.txt4')
-	    for line in ifp.readlines():
-		print line.strip()
-            ifp.close()
+	    
+#	    command = "~/bin/toolbin/conll/evaluation_script/conll17_ud_eval.py --weights ~/bin/toolbin/conll/evaluation_script/weights.clas " + options.conll_dev + "  " + devpath  + " > " + devpath + '.txt4'
+#	    print "executing: %s" % command
+#	    os.system(command)
+#	    # just show current LAS
+# 	    ifp = open(devpath + '.txt4')
+#	    for line in ifp.readlines():
+#		print line.strip()
+#           ifp.close()
 
+	    devWLAS = utils.runeval(options.conll_dev, devpath)
             print 'Finished predicting dev'
+
+            trainpath = os.path.join(options.output, 'train_epoch_%03d.conll' % (epoch+1))
+            utils.write_conll(trainpath, parser.Predict(options.conll_train))
+
+	    trainWLAS = utils.runeval(options.conll_train, trainpath, verbose=False)	
+            print 'Finished predicting train'
+	    mean = float('NaN')
+	    if len(deltas):
+		mean = sum(deltas)/len(deltas)
+
+	    delta = trainWLAS - devWLAS
+	    
+	    print "delta mean: %.2f, current delta (train - dev): %.2f" % (mean,delta)
+	    
+	    deltas.append(delta)
             parser.Save(os.path.join(options.output, "%s_%03d" % (options.model, (epoch+1))))
     else:
 	# predicting
