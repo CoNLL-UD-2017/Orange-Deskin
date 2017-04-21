@@ -24,7 +24,7 @@ class RunTest:
             outfile = object[u"outfile"]            
             goldfile = object[u"goldfile"]
             
-            if ltcode == u"fr":
+            if True: #ltcode == u"tr":
                 #print "Running", ltcode, psegmorfile, outfile
                 command = "%s/make_prediction.sh %s/%s %s %s/%s" % \
                     (mydir,
@@ -33,12 +33,12 @@ class RunTest:
                      outputdir, outfile)
                 #print command
                 os.system(command)
-            else:
-                command = "cp %s/%s %s/%s" % \
-                     (inputdataset, psegmorfile,
-                      outputdir, outfile)
-                #print command
-                os.system(command)
+#            else:
+#                command = "cp %s/%s %s/%s" % \
+#                     (inputdataset, psegmorfile,
+#                      outputdir, outfile)
+#                #print command
+#                os.system(command)
         ifp.close()
 
 

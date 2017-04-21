@@ -1,5 +1,14 @@
 #!/bin/bash
 
+
+
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
+
+
+
+
 if [ $# -lt 3 ]; then
 	echo "usage $0 test.conllu language-code outfile"
 	exit 1
@@ -7,11 +16,11 @@ fi
 
 
 TEST=$1
-LANG=$2
+LANGUE=$2
 OUTFILE=$3
 
-
 HOSTNAME=$(hostname)
+
 
 
 if [ "$HOSTNAME" == "tira-ubuntu" ]; then
@@ -36,7 +45,7 @@ TMPDIR=$(mktemp -d)
 #OUTPATH=$BASEPATH/output
 PYSCRIPTROOT=$BASEPATH/py
 BISTROOT=$BASEPATH/bistparser/barchybrid
-MODELPATH=$DATAPATH/$LANG
+MODELPATH=$DATAPATH/$LANGUE
 
 
 # cleaning CoNLL text of comments and compound representations
@@ -93,17 +102,25 @@ function predict() {
        
         # prediction
         # this path is needs to be adapted for individual system
-	pushd $BISTROOT > /dev/null
+	#pushd $BISTROOT > /dev/null
 
-        #python src/parser.py --cnn-mem 4000 --predict 
-        python src/parse_1by1.py --cnn-mem 4000 --predict \
+	echo python $BISTROOT/src/parse_1by1.py --cnn-mem 4000 --predict \
                 --outfile $TMPDIR/result1.conllu \
                 --model $MODEL \
                 --params $PARAMS \
                 $VECTORS \
                 --test $INFILE
 
-        popd > /dev/null
+
+        #python src/parser.py --cnn-mem 4000 --predict 
+        python $BISTROOT/src/parse_1by1.py --cnn-mem 4000 --predict \
+                --outfile $TMPDIR/result1.conllu \
+                --model $MODEL \
+                --params $PARAMS \
+                $VECTORS \
+                --test $INFILE
+
+        #popd > /dev/null
 
         # check whether we need to deprojectivise
         COUNTPSEUDOPROJ=$(cut -f8 $TMPDIR/result1.conllu | grep "=" | wc -l)
@@ -121,23 +138,23 @@ function predict() {
 
 # cleaning CoNLL input of comments and compound representations
 echo "Cleaning ..."
-CLEANTEST=$TMPDIR/$LANG.clean.test.conll
+CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
 
 # extract surface forms from input
 echo "Getting Form List ..."
-FORMLIST=$TMPDIR/$LANG.forms.txt
+FORMLIST=$TMPDIR/$LANGUE.forms.txt
 formslist $CLEANTEST > $FORMLIST
 
 # extract lemmas from input
 echo "Getting Lemma List ..."
-LEMLIST=$TMPDIR/$LANG.lemmas.txt
+LEMLIST=$TMPDIR/$LANGUE.lemmas.txt
 lemmalist $CLEANTEST > $LEMLIST
 
 # create word list
 echo "Generating Word List ..."
-WORDLIST=$TMPDIR/$LANG.words.txt
-ALLWORDS=$DATAPATH/$LANG/allwords.txt
+WORDLIST=$TMPDIR/$LANGUE.words.txt
+ALLWORDS=$DATAPATH/$LANGUE/allwords.txt
 wordlist $FORMLIST $LEMLIST > $WORDLIST
 
 # TODO make it work without and with 300 dims
@@ -154,12 +171,12 @@ echo "Predicting ..."
 predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
 
 # copy result in output folder
-#cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANG.output.conllu
+#cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANGUE.output.conllu
 cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 
 # evaulation for testing
 #$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
-rm -rf $TMPDIR
+#rm -rf $TMPDIR
 
