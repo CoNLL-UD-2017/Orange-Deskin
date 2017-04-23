@@ -6,13 +6,16 @@ LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
-
+# TODO
+# if language is non known, take "mix" with forms rempalce by CPOS+rand(), 
+# lemmas deleted and POS replaced by CPOS
 
 
 if [ $# -lt 3 ]; then
 	echo "usage $0 test.conllu language-code outfile"
 	exit 1
 fi
+
 
 
 TEST=$1
@@ -36,6 +39,7 @@ else
 	BASEPATH=/mnt/RAID0SHDD2X1TB/Orange-Deskin
 	DATAPATH=/home/langnat/conll2017/data
 fi
+
 
 
 
@@ -140,6 +144,16 @@ function predict() {
 echo "Cleaning ..."
 CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
+
+
+if [ -d $DATAPTH/$LANGUE ]; then
+	LANGUE=mix2
+	echo "unknown language, using $LANGUE"
+	CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
+	cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+	CLEANTEST=$CLEANTEST2
+fi
+
 
 # extract surface forms from input
 echo "Getting Form List ..."
