@@ -117,8 +117,9 @@ class FeedConll:
         data = string.join(block, "\n")
         out = self.parser.parse(data)
         outfile.write(out)
-        if (self.sentencecount % 100 == 0):
-            sys.stderr.write("%d sentences with %d words parsed\r" % (self.sentencecount, self.wordcount))
+        if (self.sentencecount % 200 == 0):
+            sys.stderr.write("%d sentences with %d words parsed\n" % (self.sentencecount, self.wordcount))
+
 
 
 

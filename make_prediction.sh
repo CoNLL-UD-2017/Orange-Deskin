@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-
 LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
@@ -146,12 +145,13 @@ CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
 
 
-if [ -d $DATAPTH/$LANGUE ]; then
+if [ ! -d $DATAPTH/$LANGUE ]; then
 	LANGUE=mix2
 	echo "unknown language, using $LANGUE"
 	CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
 	cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
 	CLEANTEST=$CLEANTEST2
+	MODELPATH=$DATAPATH/$LANGUE
 fi
 
 
