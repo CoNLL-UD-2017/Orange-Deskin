@@ -20,6 +20,7 @@ class ReadW2V:
 		line = line.strip()
 		self.keep.add(line)
 	    ifp.close()
+	    print "%d words to keep" % len(self.keep)
 
 	if binary:
 	    print "loading binary w2v file", w2vbin_filename

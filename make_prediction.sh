@@ -22,7 +22,7 @@ LANGUE=$2
 OUTFILE=$3
 
 HOSTNAME=$(hostname)
-
+NOW=$(date '+%Y.%m.%d %H:%M')
 
 
 if [ "$HOSTNAME" == "tira-ubuntu" ]; then
@@ -145,13 +145,23 @@ CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
 
 
-if [ ! -d $DATAPTH/$LANGUE ]; then
-	LANGUE=mix2
-	echo "unknown language, using $LANGUE"
-	CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
-	cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
-	CLEANTEST=$CLEANTEST2
-	MODELPATH=$DATAPATH/$LANGUE
+if [ ! -d $DATAPATH/$LANGUE ]; then
+	# check whether we know language without specifiaction (such as _partut)
+	LGPREFIX=$(echo $LANGUE | cut -d_ -f1)
+	#echo "prefix $LGPREFIX"
+	if [ -d $DATAPATH/$LGPREFIX ]; then
+		LANGUE=$LGPREFIX
+		echo "unknown language variation, using $LANGUE"
+		MODELPATH=$DATAPATH/$LANGUE
+	else
+		LANGUE=mix2
+		echo "unknown language, using $LANGUE"
+		CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
+		# delete forms, lemmas and replace POS by CPOS
+		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		CLEANTEST=$CLEANTEST2
+		MODELPATH=$DATAPATH/$LANGUE
+	fi
 fi
 
 
@@ -181,7 +191,8 @@ if [ "$VECTORFILE" != "None" ]; then
 fi
 
 # predict
-echo "Predicting ..."
+echo "Predicting ... language: $LANGUE, start: $NOW"
+echo "Predicting ... language: $LANGUE, start: $NOW" 1>&2
 predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
 
 # copy result in output folder
@@ -192,5 +203,5 @@ cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 #$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
-#rm -rf $TMPDIR
+rm -rf $TMPDIR
 
