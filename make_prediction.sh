@@ -29,10 +29,12 @@ if [ "$HOSTNAME" == "tira-ubuntu" ]; then
 	export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
 	BASEPATH=/home/Orange-Deskin/conll2017/Orange-Deskin
 	DATAPATH=$BASEPATH/data
+	MODELSPATH=$BASEPATH/models
 elif [ "$HOSTNAME" == "yd-jeuh6401" ]; then
 	export LD_LIBRARY_PATH=/home/jeuh6401/SemanticData/bist-parser/cnn-v1-gpu/pycnn
 	BASEPATH=/home/jeuh6401/conll2017/Orange-Deskin
 	DATAPATH=$BASEPATH/data
+	MODELSPATH=$BASEPATH/models
 else
 	export LD_LIBRARY_PATH="/home/langnat/conll2017/bistparser/cnn-v1-gpu/pycnn"
 	BASEPATH=/mnt/RAID0SHDD2X1TB/Orange-Deskin
@@ -48,8 +50,8 @@ TMPDIR=$(mktemp -d)
 #OUTPATH=$BASEPATH/output
 PYSCRIPTROOT=$BASEPATH/py
 BISTROOT=$BASEPATH/bistparser/barchybrid
-MODELPATH=$DATAPATH/$LANGUE
-
+EMBEDDINGSPATH=$DATAPATH/$LANGUE
+MODELPATH=$MODELSPATH/$LANGUE
 
 # cleaning CoNLL text of comments and compound representations
 function cleanconllu() {
@@ -152,15 +154,18 @@ if [ ! -d $DATAPATH/$LANGUE ]; then
 	if [ -d $DATAPATH/$LGPREFIX ]; then
 		LANGUE=$LGPREFIX
 		echo "unknown language variation, using $LANGUE"
-		MODELPATH=$DATAPATH/$LANGUE
+		EMBEDDINGSPATH=$DATAPATH/$LANGUE
+		MODELPATH=$MODELSPATH/$LANGUE
 	else
 		LANGUE=mix2
 		echo "unknown language, using $LANGUE"
 		CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
 		# delete forms, lemmas and replace POS by CPOS
-		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		#cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
 		CLEANTEST=$CLEANTEST2
-		MODELPATH=$DATAPATH/$LANGUE
+		EMBEDDINGSPATH=$DATAPATH/$LANGUE
+		MODELPATH=$MODELSPATH/$LANGUE
 	fi
 fi
 
@@ -178,17 +183,18 @@ lemmalist $CLEANTEST > $LEMLIST
 # create word list
 echo "Generating Word List ..."
 WORDLIST=$TMPDIR/$LANGUE.words.txt
-ALLWORDS=$DATAPATH/$LANGUE/allwords.txt
+ALLWORDS=$MODELSPATH/$LANGUE/allwords.txt
 wordlist $FORMLIST $LEMLIST > $WORDLIST
 
 # TODO make it work without and with 300 dims
-#EXVECTORS=$MODELPATH/*500-dim.10-win.cbow.bin
+#EXVECTORS=$EMBEDDINGSPATH/*500-dim.10-win.cbow.bin
 
 # find correct vectors file
 VECTORFILE=$($PYSCRIPTROOT/readparamspickle.py $MODELPATH/params.pickle  external_embedding | gawk -F / '{print $NF}')
 if [ "$VECTORFILE" != "None" ]; then
-	EXVECTORS=$MODELPATH/$VECTORFILE
+	EXVECTORS=$EMBEDDINGSPATH/$VECTORFILE
 fi
+
 
 # predict
 echo "Predicting ... language: $LANGUE, start: $NOW"
