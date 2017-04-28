@@ -87,8 +87,8 @@ class ReadW2V:
 		buffer = fp.read(1)
 		if len(buffer) != 1:
 		    # found end of file (less words than expected due to output filter of word2vec
-		    #print "B",buffer
-		    #print "W",word
+		    #print "B [%s]" % buffer
+		    #print "W [%s]" % word
 		    eof_found = True
 		    break
 		tuple = struct.unpack("c", buffer)
@@ -107,7 +107,7 @@ class ReadW2V:
                 messages = []
                 for e in self.embeddings:
                     messages.append("%s" % len(e))
-		sys.stdout.write("W2V: %d word vectors read (%s kept)\n" % (ct, string.join(messages, "/")))
+		sys.stdout.write("W2V: %d word vectors read (%s kept)\n" % (ct, string.join(messages, " and ")))
 		sys.stdout.flush()
 	    # read self.dims floats: the vector
 	    f = struct.unpack('f'*self.dims, fp.read(self.dims*4))

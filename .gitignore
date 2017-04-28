@@ -1,4 +1,7 @@
 data/*
+data
+models/*
+models
 output/*
 test/*
 *.pyc
