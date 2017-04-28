@@ -160,7 +160,7 @@ if [ ! -d $MODELSPATH/$LANGUE ]; then
 	# check whether we know language without specifiaction (such as _partut)
 	LGPREFIX=$(echo $LANGUE | cut -d_ -f1)
 	#echo "prefix $LGPREFIX"
-	if [ -d $DATAPATH/$LGPREFIX ]; then
+	if [ -d $MODELSPATH/$LGPREFIX ]; then
 		LANGUE=$LGPREFIX
 		echo "unknown language variation, using $LANGUE"
 		EMBEDDINGSPATH=$DATAPATH/$LANGUE
