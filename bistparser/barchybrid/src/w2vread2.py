@@ -103,7 +103,7 @@ class ReadW2V:
 	    #print "WORD:", mot
 	    mot = []
 	    ct += 1
-	    if ct % 50000 == 0:
+	    if ct % 200000 == 0:
                 messages = []
                 for e in self.embeddings:
                     messages.append("%s" % len(e))

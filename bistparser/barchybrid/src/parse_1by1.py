@@ -107,8 +107,8 @@ class FeedConll:
         end = time.time()
         ofp.close()
         ifp.close()
-        sys.stderr.write("%d sentences with %d words parsed\n" % (self.sentencecount, self.wordcount))
-        sys.stderr.write("total time: %s\n" % time.strftime("%H:%M:%S", time.gmtime(end-start)))
+        sys.stdout.write("%d sentences with %d words parsed\n" % (self.sentencecount, self.wordcount))
+        sys.stdout.write("total parsing time: %s\n" % time.strftime("%H:%M:%S", time.gmtime(end-start)))
         
     def parse(self, block, outfile):
         self.wordcount += len(block)
@@ -118,7 +118,7 @@ class FeedConll:
         out = self.parser.parse(data)
         outfile.write(out)
         if (self.sentencecount % 200 == 0):
-            sys.stderr.write("%d sentences with %d words parsed\n" % (self.sentencecount, self.wordcount))
+            sys.stdout.write("%d sentences with %d words parsed\n" % (self.sentencecount, self.wordcount))
 
 
 

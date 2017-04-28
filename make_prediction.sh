@@ -25,6 +25,11 @@ HOSTNAME=$(hostname)
 NOW=$(date '+%Y.%m.%d %H:%M')
 
 
+echo -e "\nProcessing language: $LANGUE, start: $NOW"
+echo -e "\nProcessing language: $LANGUE, start: $NOW" 1>&2
+
+
+
 if [ "$HOSTNAME" == "tira-ubuntu" ]; then
 	export LD_LIBRARY_PATH=/home/Orange-Deskin/conll2017/cnn-v1-gpu/pycnn
 	BASEPATH=/home/Orange-Deskin/conll2017/Orange-Deskin
@@ -198,7 +203,7 @@ fi
 
 # predict
 echo "Predicting ... language: $LANGUE, start: $NOW"
-echo "Predicting ... language: $LANGUE, start: $NOW" 1>&2
+#echo "Predicting ... language: $LANGUE, start: $NOW" 1>&2
 predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
 
 # copy result in output folder
