@@ -165,9 +165,10 @@ if [ ! -d $DATAPATH/$LANGUE ]; then
 		LANGUE=mix2
 		echo "unknown language, using $LANGUE"
 		CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
-		# delete forms, lemmas and replace POS by CPOS
-		#cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
-		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		# delete lemmas, replace forms by CPOS (plus random number for NOUN, VERB and ADJ) and replace POS by CPOS
+		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		# delete lemmas, replace forms by CPOS (except NOUNS, VERB and ADJ) and replace POS by CPOS
+		#cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
 		CLEANTEST=$CLEANTEST2
 		EMBEDDINGSPATH=$DATAPATH/$LANGUE
 		MODELPATH=$MODELSPATH/$LANGUE
