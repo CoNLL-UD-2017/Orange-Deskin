@@ -58,6 +58,10 @@ BISTROOT=$BASEPATH/bistparser/barchybrid
 EMBEDDINGSPATH=$DATAPATH/$LANGUE
 MODELPATH=$MODELSPATH/$LANGUE
 
+if [ "$HOSTNAME" == "yd-jeuh6401" ]; then
+    EMBEDDINGSPATH=/data/SemanticData/conll2017/embeddings
+fi
+
 # cleaning CoNLL text of comments and compound representations
 function cleanconllu() {
         grep -v "^#" | grep -P -v '^\d+[\.-]'
@@ -152,7 +156,7 @@ CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
 
 
-if [ ! -d $DATAPATH/$LANGUE ]; then
+if [ ! -d $MODELSPATH/$LANGUE ]; then
 	# check whether we know language without specifiaction (such as _partut)
 	LGPREFIX=$(echo $LANGUE | cut -d_ -f1)
 	#echo "prefix $LGPREFIX"
@@ -201,11 +205,14 @@ if [ "$VECTORFILE" != "None" ]; then
 	EXVECTORS=$EMBEDDINGSPATH/$VECTORFILE
 fi
 
+BARCHYBRID=$(ls -1 $MODELPATH/*.model_??? | tail -1)
+
 
 # predict
 echo "Predicting ... language: $LANGUE, start: $NOW"
 #echo "Predicting ... language: $LANGUE, start: $NOW" 1>&2
-predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
+#predict $CLEANTEST $MODELPATH/*.model_??? $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
+predict $CLEANTEST $BARCHYBRID $MODELPATH/params.pickle $ALLWORDS $WORDLIST $EXVECTORS
 
 # copy result in output folder
 #cp $TMPDIR/result-deproj-reinsert.conllu $OUTPATH/$LANGUE.output.conllu
