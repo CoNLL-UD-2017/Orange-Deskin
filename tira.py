@@ -15,9 +15,12 @@ class RunTest:
         ifp = open("%s/metadata.json" % inputdataset)
         objects = json.load(ifp)
         
+        number_of_lgs = len(objects)
+        ctlg = 0
         # we read the json file and process all languages in there
         # we write the result file to outputdir
         for object in objects:
+            ctlg += 1
             lcode = object[u"lcode"]
             ltcode = object[u"ltcode"]
             psegmorfile = object[u"psegmorfile"]
@@ -25,6 +28,7 @@ class RunTest:
             goldfile = object[u"goldfile"]
             
             if True: #ltcode == u"tr":
+                print "Running %d/%d: %s" % (ctlg, number_of_lgs, ltcode)
                 #print "Running", ltcode, psegmorfile, outfile
                 command = "%s/make_prediction.sh %s/%s %s %s/%s" % \
                     (mydir,
@@ -47,3 +51,4 @@ if __name__ == "__main__":
         print >> sys.stderr, "usage: %s  inputdataset outputdir" % sys.argv[0]
     else:
         rt = RunTest(sys.argv[1], sys.argv[2])
+        
