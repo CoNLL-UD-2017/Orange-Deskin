@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
 	deltas = []
         for epoch in xrange(options.epochs):
-            print '\n================\nStarting epoch', epoch
+            print '\n================\nStarting epoch', epoch+1
             parser.Train(options.conll_train, epoch)
             #devpath = os.path.join(options.output, 'dev_epoch_' + str(epoch+1) + '.conll')
             devpath = os.path.join(options.output, 'dev_epoch_%03d.conll' % (epoch+1))

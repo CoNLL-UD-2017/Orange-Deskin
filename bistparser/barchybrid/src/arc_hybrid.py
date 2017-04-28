@@ -7,7 +7,7 @@ import utils, time, random
 import numpy as np
 
 import StringIO
-import w2vread
+import w2vread2
 
 class ArcHybridLSTM:
     def __init__(self, words, pos, rels, w2i, options):
@@ -45,18 +45,26 @@ class ArcHybridLSTM:
             #external_embedding_fp.readline()
             #self.external_embedding = {line.split(' ')[0] : [float(f) for f in line.strip().split(' ')[1:]] for line in external_embedding_fp}
             #external_embedding_fp.close()
-	    W2V = w2vread.ReadW2V(options.external_embedding, 
+#	    W2V = w2vread.ReadW2V(options.external_embedding, 
+#				  binary=not options.external_embedding_Textual, 
+#				  filterfile=options.external_embedding_filter)
+#
+#	    if options.external_embedding_filter_new:
+#		W2Vnew = w2vread.ReadW2V(options.external_embedding, 
+#				      binary=not options.external_embedding_Textual, 
+#				      filterfile=options.external_embedding_filter_new)
+
+            filterfiles = []
+            if options.external_embedding_filter:
+                filterfiles.append(options.external_embedding_filter)
+                if options.external_embedding_filter_new:
+                    filterfiles.append(options.external_embedding_filter_new)
+	    W2V = w2vread2.ReadW2V(options.external_embedding, 
 				  binary=not options.external_embedding_Textual, 
-				  filterfile=options.external_embedding_filter)
-
-	    if options.external_embedding_filter_new:
-		W2Vnew = w2vread.ReadW2V(options.external_embedding, 
-				      binary=not options.external_embedding_Textual, 
-				      filterfile=options.external_embedding_filter_new)
-
+				  filterfiles=filterfiles)
 
 				
-	    self.external_embedding = W2V.embeddings
+	    self.external_embedding = W2V.embeddings[0]
 
 	    # number of dimension of the embeddings
             self.edim = len(self.external_embedding.values()[0])
@@ -68,10 +76,15 @@ class ArcHybridLSTM:
 
 	    if options.external_embedding_filter_new:
 		# adding words embeddigns for words not yet seen during training	
-		for word in W2Vnew.embeddings.keys():
+		#for word in W2Vnew.embeddings.keys():
+		#	if not self.external_embedding.has_key(word):
+		#		self.extrnd[word] = len(self.extrnd) + 3
+		#		self.external_embedding[word] = W2Vnew.embeddings[word]
+
+		for word in W2V.embeddings[1].keys():
 			if not self.external_embedding.has_key(word):
 				self.extrnd[word] = len(self.extrnd) + 3
-				self.external_embedding[word] = W2Vnew.embeddings[word]
+				self.external_embedding[word] = W2V.embeddings[1][word]
 
 	   
 	    # ininitialise the size of the embeddings
