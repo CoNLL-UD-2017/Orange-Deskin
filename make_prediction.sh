@@ -157,7 +157,7 @@ cat $TEST | cleanconllu > $CLEANTEST
 
 
 if [ ! -d $MODELSPATH/$LANGUE ]; then
-	# check whether we know language without specifiaction (such as _partut)
+	# check whether we know language without specification (such as _partut)
 	LGPREFIX=$(echo $LANGUE | cut -d_ -f1)
 	#echo "prefix $LGPREFIX"
 	if [ -d $MODELSPATH/$LGPREFIX ]; then
@@ -166,16 +166,25 @@ if [ ! -d $MODELSPATH/$LANGUE ]; then
 		EMBEDDINGSPATH=$DATAPATH/$LANGUE
 		MODELPATH=$MODELSPATH/$LANGUE
 	else
-		LANGUE=mix2
+		#LANGUE=mix2_random
+		LANGUE=mix2B
 		echo "unknown language, using $LANGUE"
 		CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
 		# delete lemmas, replace forms by CPOS (plus random number for NOUN, VERB and ADJ) and replace POS by CPOS
-		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		#cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, sprintf("%s%d", $4, rand()*50), "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
 		# delete lemmas, replace forms by CPOS (except NOUNS, VERB and ADJ) and replace POS by CPOS
-		#cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
 		CLEANTEST=$CLEANTEST2
 		EMBEDDINGSPATH=$DATAPATH/$LANGUE
 		MODELPATH=$MODELSPATH/$LANGUE
+	fi
+else
+	# check whether input text needs to be "normalised"
+	if [ -f $MODELSPATH/$LANGUE/NOWORDS ]; then
+		echo "replacing forms by CPOS for $LANGUE"
+		CLEANTEST2=$TMPDIR/$LANGUE.clean.test.empty.conll
+		cat $CLEANTEST | gawk -F '\t' 'OFS="\t" {if (NF > 6) {if ($4 == "NOUN" || $4 == "VERB" || $4 == "ADJ") print $1, $2, "_", $4,$4,$6,$7,$8,$9,$10; else print $1, $4, "_", $4,$4,$6,$7,$8,$9,$10;} else print ""}' > $CLEANTEST2
+		CLEANTEST=$CLEANTEST2
 	fi
 fi
 
@@ -222,5 +231,5 @@ cp $TMPDIR/result-deproj-reinsert.conllu $OUTFILE
 #$PYSCRIPTROOT/evaluation_script/conll17_ud_eval.py --weights $PYSCRIPTROOT/evaluation_script/weights.clas $TEST $TMPDIR/result-deproj-reinsert.conllu
 
 # clean up
-rm -rf $TMPDIR
+#rm -rf $TMPDIR
 

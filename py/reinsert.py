@@ -7,6 +7,7 @@
 
 import sys
 import re
+import string
 
 class Reinsert:
     def __init__(self, originalFile, parserOutput):
@@ -23,7 +24,8 @@ class Reinsert:
         pact = 1
         orct = 1
         while True:
-            if not origline: break
+            if not origline:
+                break
             if origline.startswith("#"):
                 # comment in original file, absent in parser output
                 ofp.write(origline)
@@ -36,15 +38,20 @@ class Reinsert:
                 origline = orig.readline()
                 orct += 1
             else:
-                o = origline.split()
-                p = parserline.split()
+                o = origline.split("\t")
+                p = parserline.split("\t")
 
-                if o[:2] != p[:2]:
+                if len(p) > 4:
+                    p[1] = o[1]
+                    parserline = string.join(p, "\t")
+                
+                if False and o[:2] != p[:2]:
                     print >> sys.stderr, "Something odd in original:%d and parser:%d, ignoring rest" % (orct, pact)
                     ofp.write(parserline)
                     for l in parser.readlines():
                         ofp.write(l)
-                    break
+
+                    #break
                 else:
                     ofp.write(parserline)
                     origline = orig.readline()
