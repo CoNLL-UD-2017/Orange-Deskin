@@ -27,11 +27,16 @@ class ConllEntry:
 				
 	
         self.pos = pos.upper()
+	if self.pos == "_":
+	    self.pos = self.cpos
         self.parent_id = parent_id
         self.relation = relation
 
     def __repr__(self):
-	return "%s:%s:%s:%s:%s" % (self.id, self.form, self.cpos, self.pred_parent_id, self.pred_relation)
+	try:
+	    return "%s:%s:%s:%s:%s" % (self.id, self.form, self.cpos, self.pred_parent_id, self.pred_relation)
+	except:
+	    return "%s:%s:%s:?:?" % (self.id, self.form, self.cpos)
 
 import string
 
