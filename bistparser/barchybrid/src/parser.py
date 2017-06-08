@@ -57,7 +57,7 @@ if __name__ == '__main__':
     global WITHCPOS
     WITHCPOS=options.WITHCPOS
     if WITHCPOS:
-	from arc_hybrid_withCPOS import ArcHybridLSTM
+	from arc_hybrid_FEAT import ArcHybridLSTM
     else:
  	if options.WITHDYNET:
 	    from arc_hybrid_dynet import ArcHybridLSTM
@@ -79,17 +79,17 @@ if __name__ == '__main__':
 
         print 'Preparing vocab'
 	if WITHCPOS:
-            words, w2i, pos, cpos, GENDER, NUMBER, PERSON, rels = utils.vocab(options.conll_train, True)
+            words, w2i, pos, cpos, GENDER, NUMBER, PERSON, CASE, rels = utils.vocab(options.conll_train, True)	    
 	else:
             words, w2i, pos, rels = utils.vocab(options.conll_train, False)
 
 	#print words
-	#print pos
+	print pos
 	#print cpos
 
 	if WITHCPOS:
             with open(os.path.join(options.output, options.params), 'w') as paramsfp:
-                pickle.dump((words, w2i, pos, cpos, GENDER, NUMBER, PERSON, rels, options), paramsfp)
+                pickle.dump((words, w2i, pos, cpos, GENDER, NUMBER, PERSON, CASE, rels, options), paramsfp)
 	else:
             with open(os.path.join(options.output, options.params), 'w') as paramsfp:
                 pickle.dump((words, w2i, pos, rels, options), paramsfp)
@@ -98,7 +98,9 @@ if __name__ == '__main__':
 
         print 'Initializing blstm arc hybrid:'
 	if WITHCPOS:
-	    parser = ArcHybridLSTM(words, pos, cpos, GENDER, NUMBER, PERSON, rels, w2i, options)
+	    print "Using features as well"
+	    #print "ff", GENDER, NUMBER, PERSON	   
+	    parser = ArcHybridLSTM(words, pos, cpos, GENDER, NUMBER, PERSON, CASE, rels, w2i, options)
 	else:
 	    parser = ArcHybridLSTM(words, pos, rels, w2i, options)
 
@@ -150,7 +152,7 @@ if __name__ == '__main__':
 	# predicting
 	if WITHCPOS:
             with open(options.params, 'r') as paramsfp:
-    	        words, w2i, pos, cpos, GENDER, NUMBER, PERSON, rels, stored_opt = pickle.load(paramsfp)
+    	        words, w2i, pos, cpos, GENDER, NUMBER, PERSON, CASE, rels, stored_opt = pickle.load(paramsfp)
 	else:
             with open(options.params, 'r') as paramsfp:
     	        words, w2i, pos, rels, stored_opt = pickle.load(paramsfp)
@@ -162,7 +164,7 @@ if __name__ == '__main__':
 	stored_opt.external_embedding_filter = options.external_embedding_filter
 	stored_opt.external_embedding_filter_new = options.external_embedding_filter_new
 	if WITHCPOS:
-            parser = ArcHybridLSTM(words, pos, cpos, GENDER, NUMBER, PERSON, rels, w2i, stored_opt)
+            parser = ArcHybridLSTM(words, pos, cpos, GENDER, NUMBER, PERSON, CASE, rels, w2i, stored_opt)
 	else:
             parser = ArcHybridLSTM(words, pos, rels, w2i, stored_opt)
 

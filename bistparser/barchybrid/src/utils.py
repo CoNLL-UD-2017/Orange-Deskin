@@ -2,6 +2,11 @@ from collections import Counter
 import re
 import os
 
+gendername = ["g", "GENRE", "Gender", "Case"]
+casename = ["CAS", "Case"]
+numbername = ["n", "NUMBER", "Number"]
+personname = ["p", "PERSONNE", "Person"]
+
 class ConllEntry:
     def __init__(self, id, form, pos, cpos, features, parent_id=None, relation=None):
         self.id = id
@@ -12,26 +17,36 @@ class ConllEntry:
 	self.NUMBER = "_"
 	self.PERSON = "_"
 	self.GENDER = "_"
+	self.CASE = "_"
+	
 	if features and features != "_":
 		fs = features.split("|")
 		for f in fs:
 			nv = f.split("=")
-			if nv == 2:
+			if len(nv) == 2:
+				#print "hhh", nv[0], nv[0] in gendername
 				#self.features[nv[0]] = nv[1]
-				if nv[0] == "g" or nv[0] == "GENRE": # features from FTB or Tilt 
-					self.GENDER = nv[1]
-				elif nv[0] == "p" or nv[0] == "PERSONNE": # features from FTB or Tilt 
-					self.GENDER = nv[1]
-				elif nv[0] == "n" or nv[0] == "NUMBER": # features from FTB or Tilt 
-					self.GENDER = nv[1]
+				if nv[0] in gendername: # features from FTB, UD or Tilt 
+				    self.GENDER = nv[1]
+				elif nv[0] in personname: # features from FTB, UD or Tilt 
+				    self.PERSON = nv[1]
+				elif nv[0] in numbername: # features from FTB or Tilt 
+				    self.NUMBER = nv[1]
+				elif nv[0] in casename: # features from FTB or Tilt 
+				    self.CASE = nv[1]
 				
-	
+	#print self.NUMBER, self.GENDER, self.PERSON
         self.pos = pos.upper()
+	if self.pos == "_":
+	    self.pos = self.cpos
         self.parent_id = parent_id
         self.relation = relation
 
     def __repr__(self):
-	return "%s:%s:%s:%s:%s" % (self.id, self.form, self.cpos, self.pred_parent_id, self.pred_relation)
+	try:
+	    return "%s:%s:%s:%s:%s" % (self.id, self.form, self.cpos, self.pred_parent_id, self.pred_relation)
+	except:
+	    return "%s:%s:%s:?:?" % (self.id, self.form, self.cpos)
 
 import string
 
@@ -96,6 +111,7 @@ def vocab(conll_path, WITHCPOS=False):
     GENDERCount = Counter()
     NUMBERCount = Counter()
     PERSCount = Counter()
+    CASECount = Counter()
 
     onlyNonProjectives = True
     with open(conll_path, 'r') as conllFP:
@@ -108,6 +124,7 @@ def vocab(conll_path, WITHCPOS=False):
 		GENDERCount.update([node.GENDER for node in sentence])
 		NUMBERCount.update([node.NUMBER for node in sentence])
 		PERSCount.update([node.PERSON for node in sentence])
+		CASECount.update([node.CASE for node in sentence])
 
     if WITHCPOS:
 	return (wordsCount, {w: i for i, w in enumerate(wordsCount.keys())},
@@ -116,10 +133,11 @@ def vocab(conll_path, WITHCPOS=False):
 					GENDERCount.keys(), 
 					NUMBERCount.keys(), 
 					PERSCount.keys(), 
+					CASECount.keys(), 
 					relCount.keys())
     else:
     	return (wordsCount, {w: i for i, w in enumerate(wordsCount.keys())},  posCount.keys(), relCount.keys())
-
+    	#return (wordsCount, {w: i for i, w in enumerate(wordsCount.keys())},  cposCount.keys(), relCount.keys())
 
 def read_conll(fh, proj):
     dropped = 0
@@ -142,6 +160,7 @@ def read_conll(fh, proj):
             id = 0
         else:
             #tokens.append(ConllEntry(int(tok[0]), tok[1], tok[4], tok[3], int(tok[6]) if tok[6] != '_' else -1, tok[7]))
+	    #                        id           form    pos     cpos    features    head
 	    tokens.append(ConllEntry(int(tok[0]), tok[1], tok[4], tok[3], tok[5], int(tok[6]) if tok[6] != '_' else -1, tok[7]))
     if len(tokens) > 1:
         yield tokens
