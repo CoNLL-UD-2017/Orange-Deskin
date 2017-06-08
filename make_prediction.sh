@@ -156,6 +156,7 @@ CLEANTEST=$TMPDIR/$LANGUE.clean.test.conll
 cat $TEST | cleanconllu > $CLEANTEST
 
 
+
 if [ ! -d $MODELSPATH/$LANGUE ]; then
 	# check whether we know language without specification (such as _partut)
 	LGPREFIX=$(echo $LANGUE | cut -d_ -f1)
@@ -164,6 +165,9 @@ if [ ! -d $MODELSPATH/$LANGUE ]; then
 		LANGUE=$LGPREFIX
 		echo "unknown language variation, using $LANGUE"
 		EMBEDDINGSPATH=$DATAPATH/$LANGUE
+		if [ "$HOSTNAME" == "yd-jeuh6401" ]; then
+			EMBEDDINGSPATH=$DATAPATH
+		fi
 		MODELPATH=$MODELSPATH/$LANGUE
 	else
 		#LANGUE=mix2_random
