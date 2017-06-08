@@ -23,7 +23,9 @@ to load only word-embeddings of words seen in the text to parse
 
 In order to get it running
 * get cnn-v1
+ 
   git clone https://github.com/clab/cnn-v1
+
 * get eigen 
   hg clone https://bitbucket.org/eigen/eigen/
 * replace `cnn/model.h' by the file in cnn-modifs
