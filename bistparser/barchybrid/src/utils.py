@@ -2,8 +2,8 @@ from collections import Counter
 import re
 import os
 
-gendername = ["g", "GENRE", "Gender", "Case"]
-casename = ["CAS", "Case"]
+gendername = ["g", "GENRE", "Gender"]
+casename   = ["CAS", "Case"]
 numbername = ["n", "NUMBER", "Number"]
 personname = ["p", "PERSONNE", "Person"]
 
@@ -36,8 +36,10 @@ class ConllEntry:
 				    self.CASE = nv[1]
 				
 	#print self.NUMBER, self.GENDER, self.PERSON
+	self.origpos = pos # XPOS
         self.pos = pos.upper()
 	if self.pos == "_":
+	    # if no XPOS, we take UPOS
 	    self.pos = self.cpos
         self.parent_id = parent_id
         self.relation = relation
@@ -173,7 +175,7 @@ def write_conll(fn, conll_gen):
     with open(fn, 'w') as fh:
         for sentence in conll_gen:
             for entry in sentence[1:]:
-                fh.write('\t'.join([str(entry.id), entry.form, '_', entry.cpos, entry.pos, '_', str(entry.pred_parent_id), entry.pred_relation, '_', '_']))
+                fh.write('\t'.join([str(entry.id), entry.form, '_', entry.cpos, entry.origpos, '_', str(entry.pred_parent_id), entry.pred_relation, '_', '_']))
                 fh.write('\n')
             fh.write('\n')
     fh.close()
@@ -206,8 +208,9 @@ numberRegex = re.compile("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+");
 def normalize(word):
     return 'NUM' if numberRegex.match(word) else word.lower()
 
-cposTable = {"PRP$": "PRON", "VBG": "VERB", "VBD": "VERB", "VBN": "VERB", ",": ".", "''": ".", "VBP": "VERB", "WDT": "DET", "JJ": "ADJ", "WP": "PRON", "VBZ": "VERB", 
-             "DT": "DET", "#": ".", "RP": "PRT", "$": ".", "NN": "NOUN", ")": ".", "(": ".", "FW": "X", "POS": "PRT", ".": ".", "TO": "PRT", "PRP": "PRON", "RB": "ADV", 
-             ":": ".", "NNS": "NOUN", "NNP": "NOUN", "``": ".", "WRB": "ADV", "CC": "CONJ", "LS": "X", "PDT": "DET", "RBS": "ADV", "RBR": "ADV", "CD": "NUM", "EX": "DET", 
-             "IN": "ADP", "WP$": "PRON", "MD": "VERB", "NNPS": "NOUN", "JJS": "ADJ", "JJR": "ADJ", "SYM": "X", "VB": "VERB", "UH": "X", "ROOT-POS": "ROOT-CPOS", 
-             "-LRB-": ".", "-RRB-": "."}
+#cposTable = {"PRP$": "PRON", "VBG": "VERB", "VBD": "VERB", "VBN": "VERB", ",": ".", "''": ".", "VBP": "VERB", "WDT": "DET", "JJ": "ADJ", "WP": "PRON", "VBZ": "VERB", 
+#             "DT": "DET", "#": ".", "RP": "PRT", "$": ".", "NN": "NOUN", ")": ".", "(": ".", "FW": "X", "POS": "PRT", ".": ".", "TO": "PRT", "PRP": "PRON", "RB": "ADV", 
+#             ":": ".", "NNS": "NOUN", "NNP": "NOUN", "``": ".", "WRB": "ADV", "CC": "CONJ", "LS": "X", "PDT": "DET", "RBS": "ADV", "RBR": "ADV", "CD": "NUM", "EX": "DET", 
+#             "IN": "ADP", "WP$": "PRON", "MD": "VERB", "NNPS": "NOUN", "JJS": "ADJ", "JJR": "ADJ", "SYM": "X", "VB": "VERB", "UH": "X", "ROOT-POS": "ROOT-CPOS", 
+#             "-LRB-": ".", "-RRB-": "."}
+

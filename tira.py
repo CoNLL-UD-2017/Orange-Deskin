@@ -4,6 +4,15 @@
 
 # parse /media/training-datasets/universal-dependency-learning/conll17-ud-development-2017-03-19/metadata.json"
 
+# run (./tira.py  inputdataset outputdir)
+#   ./tira.py  /data/SemanticData/conll2017/test/final/ud-test-v2.0-conll2017/input/conll17-ud-test-2017-05-09 out2
+
+# run eval (conll17_tira_eval.py [-h] truth system output)
+#   cd /data/SemanticData/conll2017/test/final/ud-test-v2.0-conll2017
+#  ./evaluation_script/conll17_tira_eval.py  gold/conll17-ud-test-2017-05-09/ /users/jeuh6401/conll2017/Orange-Deskin/out2 test1/ > res6.txt
+
+
+
 import json
 import sys
 import os
@@ -23,7 +32,7 @@ class RunTest:
             ctlg += 1
             lcode = object[u"lcode"]
             ltcode = object[u"ltcode"]
-            psegmorfile = object[u"psegmorfile"]
+            psegmorfile = object[u"psegmorfile"] # XX-udpipe.conllu
             outfile = object[u"outfile"]            
             goldfile = object[u"goldfile"]
             

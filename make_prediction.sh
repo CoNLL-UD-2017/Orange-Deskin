@@ -6,7 +6,7 @@ LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 
 # TODO
-# if language is non known, take "mix" with forms rempalce by CPOS+rand(), 
+# if language is non known, take "mix" with forms replaced by CPOS+rand(), 
 # lemmas deleted and POS replaced by CPOS
 
 
@@ -145,7 +145,7 @@ function predict() {
         fi
 
         # reinsert lines with [n-m] or [n.1]
-        #reinsiert $TMPDIR/result-deproj.conllu $OUTFILE
+        #reinsert $TMPDIR/result-deproj.conllu $OUTFILE
         python $PYSCRIPTROOT/reinsert.py $TEST $TMPDIR/result-deproj.conllu > $TMPDIR/result-deproj-reinsert.conllu
 
 }

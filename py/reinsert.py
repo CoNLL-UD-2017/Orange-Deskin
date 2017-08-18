@@ -42,7 +42,10 @@ class Reinsert:
                 p = parserline.split("\t")
 
                 if len(p) > 4:
-                    p[1] = o[1]
+                    p[1] = o[1] # form
+		    p[2] = o[2] # lemma
+		    p[3] = o[3] # UPOS
+		    p[4] = o[4] # XPOS
                     parserline = string.join(p, "\t")
                 
                 if False and o[:2] != p[:2]:
