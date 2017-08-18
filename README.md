@@ -122,6 +122,6 @@ Finally de-projectivise output if you have projectivised:
 ## References
 
  * Kiperwasser, E.; Goldberg, Y. (2016): [Simple and Accurate Dependency Parsing Using Bidirectional LSTM Feature Representations](https://www.transacl.org/ojs/index.php/tacl/article/viewFile/885/198), arXiv preprint arXiv:1603.04351.
- * Heinecke, J.; Asadullah, M. (2017): Multi-Model and Crosslingual Dependency Analysis. In: Proceedings of the CoNLL 2017 Shared Task; Multilingual Parsing from Raw Text to Universal Dependencies. ACL
+ * Heinecke, J.; Asadullah, M. (2017): [Multi-Model and Crosslingual Dependency Analysis](http://www.aclweb.org/anthology/K/K17/K17-3011.pdf). In: Proceedings of the CoNLL 2017 Shared Task; Multilingual Parsing from Raw Text to Universal Dependencies. ACL: ([Poster presented at CoNLL 2017 in Vancouver BC](orange-poster.pdf))
 
 
